@@ -8,8 +8,7 @@ import Data.Char (chr)
 
 -- A simple implementation of the paper "Complete and Easy Bidirectional 
 -- Typechecking for Higher-Rank Polymorphism". I'm writing this to understand 
--- it better. I want to be able to modify it soon lol so i'll have to explain it 
--- to other to see if they can understand it too.
+-- it better and to explain it to my friends. 
 
 type Id = String
 
@@ -67,13 +66,14 @@ instance Show CtxElem where
     ElSolved s ty -> s ++ " = " ++ show ty
     ElMarker s -> "▶" ++ s
 
--- Contexts have to be some kind of *ordered* data structure. It's essential in the type 
--- system in order to make scoping rules work under this system. Most of the rules in the paper
+-- Contexts have to be some kind of *ordered* data structure. It's essential in this type 
+-- checker in order to make scoping rules work. Most of the rules in the paper
 -- Are described using the *Hole Notation* that can be used to describe a lot of things like 
 
--- Γ[Θ]                                                 Exists an Θ in Γ
--- Γ[^a][^β] then Γ[^a][^β = ^α]                        Enforce the order of substitutions
+-- Γ[Θ]                                                 Exists an Θ in sΓ
 -- r[^b] = (a, ^b, ^c) then r[^b = a] = (a, ^b = a, ^c) Substitutions  
+-- Γ[^a][^β] then Γ[^a][^β = ^α]                        Enforce the order of the substition of ^b to ^b = ^a
+
 
 newtype Context = Context { ctxElems :: [CtxElem]}
   deriving (Semigroup, Monoid)
@@ -389,7 +389,7 @@ typeApply ctx ty expr = case (ty, expr) of
   (TyForall alpha a, e) -> do -- ∀App
     alpha1 <- newName
     typeApply ctx (typeSubst alpha (TyExists alpha1) a) e
-  (_, _) -> error "It should have been impossible!! :c happend on typeApply"
+  (_, _) -> error "Impossible :c"
 
 runInference :: Expr -> Ty 'Poly 
 runInference expr = let (ctx, ty) = evalState (typeSynth (Context []) expr) 1 in 
