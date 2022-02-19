@@ -20,6 +20,8 @@ default-extensions:
   - StandaloneDeriving
   - FlexibleContexts
   - TupleSections
+  - ConstraintKinds
+  - StrictData
 
 executables:
   Checkers-exe:
