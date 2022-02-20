@@ -19,9 +19,11 @@ default-extensions:
   - GeneralisedNewtypeDeriving
   - StandaloneDeriving
   - FlexibleContexts
+  - MultiWayIf
   - TupleSections
   - ConstraintKinds
   - StrictData
+  - OverloadedStrings
 
 executables:
   Checkers-exe:
@@ -33,3 +35,6 @@ executables:
       - -with-rtsopts=-N
     dependencies:
       - mtl
+      - megaparsec
+      - text
+      - ansi-terminal
