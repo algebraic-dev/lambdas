@@ -80,3 +80,5 @@ dunTy = do
 
 parseDunfieldExpr :: Parser (VExpr (Dunfield.Ty 'Dunfield.Poly))
 parseDunfieldExpr = (try (app dunTy) <|> expr dunTy) <* eof
+
+-- Parsing types for Simple typed bidirectional
