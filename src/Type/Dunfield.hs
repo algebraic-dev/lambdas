@@ -18,8 +18,6 @@ import Control.Monad.Except (ExceptT (ExceptT), Except, MonadError)
 import qualified Control.Monad.State as State
 import qualified Control.Monad.Except as Except
 
--- Just to colorize some things
-
 -- A simple implementation of the paper "Complete and Easy Bidirectional
 -- Typechecking for Higher-Rank Polymorphism". https://arxiv.org/pdf/1306.6032.pdf
 -- I'm writing this to understand it better and to explain it to my friends.
