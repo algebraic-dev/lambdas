@@ -1,15 +1,14 @@
 module Main where
+import REPL
+import qualified Data.Text as Text
+import System.IO
 
-import Dunfield ( Ty(TyAlpha, TyForall, TyFun), Kind(..), runInference )
-import Expr ( VExpr(EInt, Ann, Lam, App, Var, EStr) )
-import Data.Foldable (for_)
-import Util (red)
-
-id' :: Ty 'Poly
-id' = TyForall "a" (TyFun (TyAlpha "a") (TyAlpha "a"))
-
-expr :: VExpr (Ty 'Poly)
-expr =  Ann (Lam "b" (App (Var "b") (EStr "ata"))) (TyFun id' (TyAlpha "String"))
+import qualified Parser
+import qualified Text.Megaparsec as Mp
+import qualified Type.Dunfield as Dunfield
 
 main :: IO ()
-main = either (putStrLn . (red "Error: " ++)) print (runInference expr)
+main = repl $ \text -> do
+  case Mp.runParser Parser.parseDunfieldExpr "REPL" text of
+    Left err   -> putStrLn $ "\n" ++ Mp.errorBundlePretty err
+    Right expr -> either putStrLn print (Dunfield.runInference expr)
