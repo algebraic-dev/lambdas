@@ -290,7 +290,7 @@ subType ctx tyA tyB =
     (TyExists a, TyExists b) | a == b -> pure ctx -- <:Exvar
     (TyPair a a', TyPair b b') -> do -- <:Pair
       theta <- subType ctx a b
-      subType ctx a' b'
+      subType theta a' b'
     (TyFun a a', TyFun b b') -> do -- <:→
       theta <- subType ctx b a
       delta <- subType theta (applyCtx theta a') (applyCtx theta b')
@@ -335,12 +335,6 @@ instantiateL ctx a tyA =
           alpha1 <- newName
           ctx' <- instantiateL (ElTy alpha1 <| ctx) alpha1 (typeSubst b (TyAlpha alpha1) b')
           pure $ dropCtx (ElTy alpha1) ctx'
-        TyPair a1 a2 -> do 
-          alpha1 <- newName
-          alpha2 <- newName
-          let toAdd = [ElSolved a (TyPair (TyExists alpha1) (TyExists alpha2)), ElExists alpha1, ElExists alpha2]
-          theta <- instantiateL (insertAt ctx (ElExists a) toAdd) alpha1 a1
-          instantiateL theta alpha2 (applyCtx theta a2)
         _ -> Except.throwError "Impossible c: btw it happened on InstantiateL"
     where
       isAfter a b = isOrdered ctx (ElExists a) (ElExists b)
@@ -363,8 +357,8 @@ instantiateR ctx tyA a =
           alpha1 <- newName
           alpha2 <- newName
           let toAdd = [ElSolved a (TyPair (TyExists alpha1) (TyExists alpha2)), ElExists alpha1, ElExists alpha2]
-          theta <- instantiateL (insertAt ctx (ElExists a) toAdd) alpha1 a1
-          instantiateL theta alpha2 (applyCtx theta a2) 
+          theta <- instantiateR (insertAt ctx (ElExists a) toAdd) a1 alpha1
+          instantiateR theta (applyCtx theta a2) alpha2 
         TyForall b b' -> do -- InstRAllL
           beta1 <- newName
           ctx' <- instantiateR (ElExists beta1 <| ElMarker beta1 <| ctx) (typeSubst b (TyAlpha beta1) b') beta1
@@ -386,8 +380,8 @@ typeSynth ctx expr = case expr of
   EInt _ -> pure (ctx, TyAlpha "Int")
   EPair a b -> do
     (theta, ty) <- typeSynth ctx a
-    (theta, ty') <- typeSynth theta b
-    pure (ctx, TyPair ty ty')
+    (delta, ty') <- typeSynth theta b
+    pure (delta, applyCtx delta (TyPair ty ty'))
   Var s -> maybe (Except.throwError ("Cannot find variable " ++ s)) 
                  (pure . (ctx, ))
                  (findVar ctx s)
