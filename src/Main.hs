@@ -3,9 +3,9 @@ import REPL
 import qualified Data.Text as Text
 import System.IO
 
-import qualified Parser
-import qualified Text.Megaparsec as Mp
-import qualified Type.Dunfield as Dunfield
+import qualified Type.Utils.Parser as Parser
+import qualified Text.Megaparsec   as Mp
+import qualified Type.Dunfield     as Dunfield
 
 main :: IO ()
 main = repl $ \text -> do
