@@ -10,6 +10,12 @@ description: Please see the README on GitHub at <https://github.com/githubuser/C
 
 dependencies:
   - base >= 4.7 && < 5
+  - mtl
+  - megaparsec
+  - text
+  - ansi-terminal
+  - containers
+  - unordered-containers
 
 default-extensions:
   - GADTs
@@ -33,9 +39,3 @@ executables:
       - -threaded
       - -rtsopts
       - -with-rtsopts=-N
-    dependencies:
-      - mtl
-      - megaparsec
-      - text
-      - ansi-terminal
-      - containers

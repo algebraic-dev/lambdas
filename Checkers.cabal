@@ -22,11 +22,12 @@ source-repository head
 executable Checkers-exe
   main-is: Main.hs
   other-modules:
-      Expr
-      Parser
+      Pattern.Simple
       REPL
       Type.BiSimple
       Type.Dunfield
+      Type.Utils.Expr
+      Type.Utils.Parser
       Util
       Paths_Checkers
   hs-source-dirs:
@@ -52,4 +53,5 @@ executable Checkers-exe
     , megaparsec
     , mtl
     , text
+    , unordered-containers
   default-language: Haskell2010
