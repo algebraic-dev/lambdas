@@ -1,18 +1,18 @@
 module Type.BiSimple where
 
+import Control.Monad.Except (MonadError)
 import Data.Map (Map)
 import Data.Set (Set)
-import Control.Monad.Except (MonadError)
+import Util     (blue)
 
-import qualified Expr
+import qualified Type.Utils.Expr      as Expr
 import qualified Data.Map             as Map
 import qualified Data.Set             as Set
 import qualified Control.Monad.Except as Except
-import Util (blue)
 
 -- Implementation of a type checker for simply typed lambda calculus
 -- based on https://arxiv.org/pdf/1908.05839.pdf. Simply typed lambda
--- calculus dont have polymorphic things so it's an straightforward 
+-- calculus dont have polymorphic things so it's an straightforward
 -- implementation without existentials, markers and shit like that.
 
 -- The monad that will help with error handling to the REPL
@@ -29,7 +29,7 @@ type Id = String
 
 -- Here we have three types of types that includes a simple type "alpha"
 -- that is the name of a type like "String" or "Int", Arrows that are
--- functions type like (Int -> String) and Pairs that are tuples. 
+-- functions type like (Int -> String) and Pairs that are tuples.
 
 -- Added pairs and removed the unit rule because they're better to illustrate
 -- some real types
@@ -53,7 +53,7 @@ data Context = Context { ctxVars :: Map Id Ty, ctxTypes :: Set Id }
 newVar :: Context -> Id -> Ty -> Context
 newVar ctx name ty = ctx { ctxVars = Map.insert name ty (ctxVars ctx) }
 
-simpleCtx :: Context 
+simpleCtx :: Context
 simpleCtx = Context Map.empty (Set.fromList ["Int", "String"])
 
 -- 𝑒 ::= 𝑥 | 𝜆𝑥 . 𝑒 | 𝑒 𝑒 | ()
@@ -69,8 +69,8 @@ typeWellFormed ctx = \case
   TyPair ty ty' -> typeWellFormed ctx ty && typeWellFormed ctx ty'
 
 unify :: Typer m => Context -> Ty -> Ty -> m Context
-unify ctx a b = 
-  if a == b 
+unify ctx a b =
+  if a == b
     then pure ctx
     else Except.throwError $ "Cannot unify types '" ++ show a ++ "' and '" ++ show b ++ "'"
 
@@ -107,7 +107,7 @@ typeCheck ctx expr ty = case (expr, ty) of
       typeCheck (newVar ctx binder from) body to
     (e, b) -> do -- Sub⇐
       (ctx', ty) <- typeSynth ctx e
-      unify ctx' ty b 
+      unify ctx' ty b
 
-runInference :: Expr -> Either String Ty 
+runInference :: Expr -> Either String Ty
 runInference = fmap snd . Except.runExcept . typeSynth simpleCtx

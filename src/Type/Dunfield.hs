@@ -3,7 +3,7 @@ module Type.Dunfield where
 import Prelude hiding (log)
 
 import Util ( red, blue, yellow, green, dim )
-import Expr (VExpr(..))
+import Type.Utils.Expr (VExpr(..))
 
 import Data.Char (chr)
 import Data.Maybe (fromJust, isJust, catMaybes, mapMaybe, fromMaybe)
