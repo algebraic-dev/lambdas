@@ -9,12 +9,21 @@ import GHC.Stack                    (HasCallStack)
 
 import qualified Data.HashSet as HashSet
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Text as Text
 
 data Pat
   = Wild
   | Cons Text [Pat]
   | Or Pat Pat
   deriving Show
+
+showPat :: Bool -> Pat -> Text
+showPat _ Wild                   = "_"
+showPat _ (Cons c [])            = c
+showPat False (Cons c r)         = c <> " " <> Text.intercalate " " (showPat True <$> r)
+showPat False (Or a@(Cons {}) b) = showPat False a <> " | " <> showPat False b
+showPat False (Or a b)           = showPat True a <> " | " <> showPat False b
+showPat True  t                  = "(" <> showPat False t <> ")"
 
 type Context = (HashMap Text (HashSet (Text, Int)), HashMap Text (Text, Int))
 

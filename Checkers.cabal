@@ -22,6 +22,8 @@ source-repository head
 executable Checkers-exe
   main-is: Main.hs
   other-modules:
+      Pattern.Complete
+      Pattern.Half
       Pattern.Simple
       REPL
       Type.BiSimple
